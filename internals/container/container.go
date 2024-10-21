@@ -3,6 +3,7 @@ package container
 import (
 	"flux-version/internals/config"
 	gitlabController "flux-version/internals/controllers/gitlab"
+	"flux-version/internals/controllers/healthcheck"
 	"flux-version/internals/infrastructure/server/http"
 	"flux-version/internals/repository/gitlab"
 	gitlabService "flux-version/internals/services/gitlab"
@@ -24,6 +25,7 @@ func (c *Container) Configure() error {
 		gitlab.NewRepository,
 		gitlabService.NewService,
 		gitlabController.NewController,
+		healthcheck.NewController,
 	}
 	for _, service := range servicesConstructors {
 		if err := c.container.Provide(service); err != nil {

@@ -10,16 +10,17 @@ import (
 	"regexp"
 )
 
-func (s *Service) ReadFile(p string) map[string][]types.Service {
+func (s *Service) ReadFile(tree *object.Tree, p string) map[string][]types.Service {
 	tagPattern := regexp.MustCompile(s.config.TagPattern)
 	versionPattern := regexp.MustCompile(s.config.VersionPattern)
 	var currentCategory map[string][]types.Service
-	fmt.Println("Project: ", p)
-	repo := fmt.Sprintf("%s%s-flux.git", s.config.RepoURL, p)
-	err := s.gitlabRepo.LoadRepo(repo).Files().ForEach(func(f *object.File) error {
+	//fmt.Println("Project: ", p)
+	//repo := fmt.Sprintf("%s%s-flux.git", s.config.RepoURL, p)
+	path := fmt.Sprintf("%s/%s", s.config.ClonePath, p)
+	err := tree.Files().ForEach(func(f *object.File) error {
 		// Open each file for reading
 		if filepath.Base(f.Name) == "patch.yaml" { //search patch.yaml
-			filePath := filepath.Join(s.config.ClonePath, f.Name)
+			filePath := filepath.Join(path, f.Name)
 			file, err := os.Open(filePath)
 			if err != nil {
 				return err
@@ -52,6 +53,17 @@ func (s *Service) ReadFile(p string) map[string][]types.Service {
 	if err != nil {
 		panic(err)
 	}
-	s.gitlabRepo.DeleteRepo(s.config.ClonePath)
+	//s.gitlabRepo.DeleteRepo(s.config.ClonePath)
 	return currentCategory
+}
+
+func (s *Service) InitLoad() map[string]*object.Tree {
+
+	var repo = make(map[string]*object.Tree)
+
+	for _, p := range s.config.ProjectList {
+		//repoUrl := fmt.Sprintf("%s%s-flux.git", s.config.RepoURL, p)
+		repo[p] = s.gitlabRepo.LoadRepo(s.config.RepoURL, p)
+	}
+	return repo
 }

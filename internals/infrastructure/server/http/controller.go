@@ -1,13 +1,18 @@
 package http
 
-import "flux-version/internals/controllers/gitlab"
+import (
+	"flux-version/internals/controllers/gitlab"
+	"flux-version/internals/controllers/healthcheck"
+)
 
 type Controller struct {
-	gitlab *gitlab.Controller
+	gitlab      *gitlab.Controller
+	healthcheck *healthcheck.Controller
 }
 
-func NewController(gitlab *gitlab.Controller) *Controller {
+func NewController(gitlab *gitlab.Controller, healthcheck *healthcheck.Controller) *Controller {
 	return &Controller{
-		gitlab: gitlab,
+		gitlab:      gitlab,
+		healthcheck: healthcheck,
 	}
 }

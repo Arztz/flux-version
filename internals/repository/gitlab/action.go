@@ -9,21 +9,23 @@ import (
 	"os"
 )
 
-func (r *Repository) LoadRepo(repoUrl string) *object.Tree {
+func (r *Repository) LoadRepo(repoUrl string, p string) *object.Tree {
 	//Remove Folder Before fetch new one
+	rp := fmt.Sprintf("%s%s-flux.git", repoUrl, p)
+	path := fmt.Sprintf("%s/%s", r.config.ClonePath, p)
 	var err error
-	err = r.DeleteRepo(r.config.ClonePath)
+	err = r.DeleteRepo(path)
 	if err != nil {
 		log.Println(err)
 	}
 
 	//Git Clone
-	repo, err := git.PlainClone(r.config.ClonePath, false, &git.CloneOptions{
+	repo, err := git.PlainClone(path, false, &git.CloneOptions{
 		Auth: &http.BasicAuth{
 			Username: "oauth", // yes, this can be anything except an empty string
 			Password: r.config.GitlabToken},
 
-		URL:      repoUrl,
+		URL:      rp,
 		Progress: os.Stdout,
 	})
 	if err != nil {

@@ -8,8 +8,9 @@ import (
 
 func (c *Controller) GetJson(ctx *fiber.Ctx) error {
 	var all []types.Project
+
 	for _, p := range c.config.ProjectList {
-		category := c.service.ReadFile(p)
+		category := c.service.ReadFile(c.repo[p], p)
 		project := types.Project{Project: p, Category: []types.Category{}}
 		res, err := c.service.GenerateJSON(project, category)
 		if err != nil {
