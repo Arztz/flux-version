@@ -14,4 +14,5 @@ type Service struct {
 	Name    string `json:"name"`
 	NonProd string `json:"nonprod"`
 	UAT     string `json:"uat"`
+	Prod    string `json:"prod"`
 }

@@ -2,11 +2,13 @@ package container
 
 import (
 	"flux-version/internals/config"
-	"flux-version/internals/infrastructure/gitlab"
+	gitlabController "flux-version/internals/controllers/gitlab"
+	"flux-version/internals/infrastructure/server/http"
+	"flux-version/internals/repository/gitlab"
+	gitlabService "flux-version/internals/services/gitlab"
 	"flux-version/internals/utils/logrus"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/dig"
-	"net/http"
 )
 
 type Container struct {
@@ -17,8 +19,11 @@ func (c *Container) Configure() error {
 
 	servicesConstructors := []interface{}{
 		config.NewConfiguration,
-		http.NewServeMux,
-		gitlab.NewGitLab,
+		http.NewServer,
+		http.NewController,
+		gitlab.NewRepository,
+		gitlabService.NewService,
+		gitlabController.NewController,
 	}
 	for _, service := range servicesConstructors {
 		if err := c.container.Provide(service); err != nil {
@@ -31,16 +36,14 @@ func (c *Container) Configure() error {
 
 func (c *Container) Start() error {
 	log.Info("Start Container")
-	//if err := c.container.Invoke(func(h *httpServer.Server) {
-	//	go func() {
-	//		_ = h.Start()
-	//	}()
-	//
-	//}); err != nil {
-	//	log.Errorf("%s", err)
-	//
-	//	return err
-	//}
+
+	if err := c.container.Invoke(func(h *http.Server) {
+		h.Start()
+	}); err != nil {
+		log.Errorf("%s", err)
+
+		return err
+	}
 
 	return nil
 }

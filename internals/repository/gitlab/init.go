@@ -1,15 +1,15 @@
 package gitlab
 
 import (
-	"flux-version/internals/infrastructure/gitlab"
+	"flux-version/internals/config"
 )
 
-type GitlabRepository struct {
-	gitlab *gitlab.Gitlab
+type Repository struct {
+	config config.Configuration
 }
 
-func NewRepository(gitlab *gitlab.Gitlab) Interface {
-	return &GitlabRepository{
-		gitlab: gitlab,
+func NewRepository(config config.Configuration) Interface {
+	return &Repository{
+		config: config,
 	}
 }
