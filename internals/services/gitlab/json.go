@@ -39,7 +39,7 @@ func (s *Service) MergeService(services []types.Service) []types.Service {
 	return result
 }
 
-func (s *Service) InsertServices(path string, match []string, c map[string][]types.Service) map[string][]types.Service {
+func (s *Service) insertServices(path string, tag string, c map[string][]types.Service) map[string][]types.Service {
 
 	text := strings.Split(path, "/") //split path
 	environment := text[1]           //nonprod
@@ -50,12 +50,14 @@ func (s *Service) InsertServices(path string, match []string, c map[string][]typ
 
 	service := types.Service{Name: serviceName}
 
-	if environment == "nonprod" || environment == "develop" {
-		service.NonProd = match[1]
-	} else if environment == "uat" {
-		service.UAT = match[1]
-	} else if environment == "prod" {
-		service.Prod = match[1]
+	switch environment {
+	case "nonprod", "develop":
+		service.NonProd = tag
+	case "uat":
+		service.UAT = tag
+	case "prod":
+		service.Prod = tag
+
 	}
 
 	c[text[0]] = append(c[text[0]], service)

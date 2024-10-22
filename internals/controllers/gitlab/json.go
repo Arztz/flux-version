@@ -3,14 +3,19 @@ package gitlab
 import (
 	"flux-version/types"
 	"github.com/gofiber/fiber/v2"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 func (c *Controller) GetJson(ctx *fiber.Ctx) error {
 	var all []types.Project
+	//c.service.Init()
 
 	for _, p := range c.config.ProjectList {
-		category := c.service.ReadFile(c.repo[p], p)
+		category, err := c.service.ReadFile(p)
+		if err != nil {
+			log.Printf("err: %s", err)
+		}
 		project := types.Project{Project: p, Category: []types.Category{}}
 		res, err := c.service.GenerateJSON(project, category)
 		if err != nil {

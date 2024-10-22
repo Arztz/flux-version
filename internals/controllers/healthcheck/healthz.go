@@ -6,6 +6,8 @@ import (
 )
 
 func (c *Controller) Healthz(ctx *fiber.Ctx) error {
+	if !c.gitlab.Healthcheck() {
+		return ctx.Status(http.StatusBadGateway).JSON("Not Ready")
+	}
 	return ctx.Status(http.StatusOK).JSON("OK")
-
 }

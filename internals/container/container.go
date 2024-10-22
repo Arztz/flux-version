@@ -39,7 +39,8 @@ func (c *Container) Configure() error {
 func (c *Container) Start() error {
 	log.Info("Start Container")
 
-	if err := c.container.Invoke(func(h *http.Server) {
+	if err := c.container.Invoke(func(h *http.Server, service gitlabService.Interface) {
+		service.Init()
 		h.Start()
 	}); err != nil {
 		log.Errorf("%s", err)
